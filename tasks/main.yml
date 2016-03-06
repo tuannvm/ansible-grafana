@@ -1,0 +1,27 @@
+---
+# tasks file for grafana
+- name: add repo key
+  apt_key: url=https://packagecloud.io/gpg.key state=present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: add repo config
+  apt_repository: repo='deb https://packagecloud.io/grafana/stable/debian/ wheezy main' state=present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: install grafana
+  apt: name=grafana state=present update_cache=yes
+  notify:
+  - restart grafana
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: add grafana repo centos
+  copy: src=grafana.repo dest=/etc/yum.repos.d/grafana.repo
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: install grafana package centos
+  yum: name=grafana state=present update_cache=yes
+  notify:
+  - restart grafana
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+
